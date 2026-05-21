@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowMint AI — 讓 AI 替你賺錢</title>
+  <meta name="description" content="AI 自動化工作流 × 被動收入系統。加入候補名單，率先解鎖早鳥資格。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #04040f;
+      --bg2: #07071a;
+      --purple: #7c3aed;
+      --purple-light: #a855f7;
+      --gold: #f59e0b;
+      --gold-light: #fcd34d;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: rgba(124, 58, 237, 0.25);
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-hover: rgba(255, 255, 255, 0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 600px; height: 600px; background: rgba(124,58,237,0.18); top: -200px; right: -150px; }
+    .orb-2 { width: 500px; height: 500px; background: rgba(245,158,11,0.10); bottom: 10%; left: -150px; }
+    .orb-3 { width: 350px; height: 350px; background: rgba(168,85,247,0.12); top: 40%; left: 50%; transform: translateX(-50%); }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(4,4,15,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--purple), var(--gold));
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 900;
+    }
+    .logo span { background: linear-gradient(90deg, var(--purple-light), var(--gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-badge {
+      background: rgba(124,58,237,0.2);
+      border: 1px solid var(--border);
+      color: var(--purple-light);
+      padding: 6px 14px; border-radius: 99px;
+      font-size: 13px; font-weight: 500;
+    }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--purple), #5b21b6);
+      color: #fff; padding: 10px 22px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer; border: none;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+    }
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(124,58,237,0.15); border: 1px solid var(--border);
+      padding: 8px 18px; border-radius: 99px; margin-bottom: 32px;
+      font-size: 13px; color: var(--purple-light); font-weight: 500;
+    }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(40px, 7vw, 80px);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -2px; margin-bottom: 24px;
+    }
+    h1 .grad {
+      background: linear-gradient(135deg, var(--purple-light) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: clamp(16px, 2.5vw, 20px);
+      color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 48px;
+    }
+
+    /* ── Waitlist Form ── */
+    .waitlist-form {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%; max-width: 460px;
+      backdrop-filter: blur(20px);
+      position: relative; z-index: 1;
+    }
+    .form-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .form-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 6px; }
+    .field input, .field select {
+      width: 100%; padding: 13px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: var(--text);
+      font-size: 15px; font-family: inherit;
+      outline: none; transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--purple-light); }
+    .field select option { background: #1a1a2e; }
+    .submit-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--purple), #5b21b6);
+      border: none; border-radius: 12px;
+      color: #fff; font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: all 0.25s; margin-top: 4px;
+      font-family: inherit;
+    }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(124,58,237,0.45); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .counter-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 16px; font-size: 13px; color: var(--muted);
+    }
+    .counter-num { color: var(--gold-light); font-weight: 700; font-size: 15px; }
+
+    /* ── Success State ── */
+    .success-box {
+      display: none; text-align: center; padding: 10px 0;
+    }
+    .success-icon { font-size: 48px; margin-bottom: 12px; }
+    .success-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .success-pos {
+      background: linear-gradient(135deg, var(--purple-light), var(--gold-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      font-size: 32px; font-weight: 900; display: block; margin: 8px 0;
+    }
+    .success-sub { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── Stats ── */
+    .stats {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; gap: 60px;
+      padding: 0 24px 80px; flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 36px; font-weight: 800;
+      background: linear-gradient(135deg, var(--purple-light), var(--gold-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Features ── */
+    .section {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 80px 24px;
+    }
+    .section-label {
+      text-align: center; font-size: 12px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--purple-light); margin-bottom: 16px;
+    }
+    .section-title {
+      text-align: center; font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 4vw, 44px); font-weight: 800;
+      letter-spacing: -1px; margin-bottom: 56px; line-height: 1.2;
+    }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 768px) { .cards { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 18px; padding: 32px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s;
+    }
+    .card:hover { background: var(--glass-hover); transform: translateY(-4px); border-color: rgba(124,58,237,0.5); }
+    .card-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 20px;
+    }
+    .card-icon.purple { background: rgba(124,58,237,0.2); }
+    .card-icon.gold { background: rgba(245,158,11,0.2); }
+    .card-icon.green { background: rgba(34,197,94,0.2); }
+    .card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* ── Pricing Preview ── */
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+    .pricing-card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 18px; padding: 32px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .pricing-card.featured {
+      border-color: var(--purple);
+      background: rgba(124,58,237,0.08);
+    }
+    .pricing-badge {
+      position: absolute; top: 16px; right: 16px;
+      background: linear-gradient(135deg, var(--purple), var(--gold));
+      color: #fff; font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: 99px;
+    }
+    .plan-name { font-size: 14px; color: var(--muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .plan-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 42px; font-weight: 800; margin-bottom: 4px;
+    }
+    .plan-price span { font-size: 18px; color: var(--muted); }
+    .plan-note { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    .plan-features { list-style: none; text-align: left; font-size: 14px; color: var(--muted); }
+    .plan-features li { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .plan-features li::before { content: "✓ "; color: var(--purple-light); font-weight: 700; }
+    .plan-features li.locked::before { content: "○ "; color: rgba(255,255,255,0.2); }
+    .plan-features li.locked { color: rgba(255,255,255,0.2); }
+
+    /* ── CTA Banner ── */
+    .cta-banner {
+      position: relative; z-index: 1;
+      margin: 0 auto; max-width: 900px;
+      padding: 0 24px 100px;
+    }
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(245,158,11,0.1));
+      border: 1px solid rgba(124,58,237,0.4);
+      border-radius: 24px; padding: 60px 40px;
+      text-align: center; backdrop-filter: blur(20px);
+    }
+    .cta-inner h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(24px, 4vw, 40px); font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; }
+    .cta-inner p { font-size: 16px; color: var(--muted); margin-bottom: 32px; }
+    .cta-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), #d97706);
+      color: #fff; padding: 16px 40px; border-radius: 12px;
+      font-size: 16px; font-weight: 700; text-decoration: none;
+      transition: all 0.25s;
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 35px rgba(245,158,11,0.4); }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-size: 16px; font-weight: 700; color: var(--muted); }
+    .footer-copy { font-size: 13px; color: rgba(148,163,184,0.5); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 32px; right: 32px; z-index: 999;
+      background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.4);
+      color: #4ade80; padding: 14px 20px; border-radius: 12px;
+      font-size: 14px; font-weight: 600; backdrop-filter: blur(20px);
+      transform: translateY(80px); opacity: 0; transition: all 0.3s;
+      max-width: 300px;
+    }
+    .toast.error { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #f87171; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .nav-badge { display: none; }
+      .waitlist-form { padding: 28px 20px; }
+      .stats { gap: 32px; }
+      footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="logo">
+      <div class="logo-icon">FM</div>
+      <span>FlowMint AI</span>
+    </div>
+    <div class="nav-badge">🔒 限量早鳥候補開放中</div>
+    <a href="#waitlist" class="nav-cta">加入候補</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="badge-pill">
+      <span class="badge-dot"></span>
+      Beta 預覽版 · 早鳥現正候補
+    </div>
+    <h1>
+      讓 AI 替你工作<br />
+      <span class="grad">收入自動流入</span>
+    </h1>
+    <p class="hero-sub">
+      FlowMint AI 整合頂尖 AI 自動化工作流，幫你建立可複製的被動收入系統。
+      不需要技術背景，一個人也能跑出月收入。
+    </p>
+
+    <!-- Waitlist Form -->
+    <div class="waitlist-form" id="waitlist">
+      <div id="form-content">
+        <div class="form-title">🚀 加入早鳥候補名單</div>
+        <div class="form-sub">率先解鎖早鳥折扣 · 搶先體驗完整功能</div>
+        <div class="field">
+          <label>你的名稱 / 暱稱</label>
+          <input type="text" id="inp-name" placeholder="Ian / 錦川 / 隨便都行" />
+        </div>
+        <div class="field">
+          <label>Email *</label>
+          <input type="email" id="inp-email" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label>最感興趣的方向</label>
+          <select id="inp-interest">
+            <option value="">選一個（可選）</option>
+            <option value="automation">AI 自動化工作流</option>
+            <option value="passive-income">被動收入 / 數位產品</option>
+            <option value="content">AI 內容創作 + 變現</option>
+            <option value="trading">AI 量化交易策略</option>
+            <option value="agent">打造個人 AI Agent</option>
+          </select>
+        </div>
+        <button class="submit-btn" id="submit-btn" onclick="joinWaitlist()">搶佔候補名額 →</button>
+        <div class="counter-row">
+          已有 <span class="counter-num" id="count-display">—</span> 人候補 · 名額有限
+        </div>
+      </div>
+
+      <div class="success-box" id="success-box">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">你進來了！</div>
+        <span class="success-pos" id="position-display">#—</span>
+        <div class="success-sub">
+          你的候補名額已確認。<br />
+          當我們開放測試，你會第一個收到通知。<br /><br />
+          <strong style="color: var(--gold-light);">分享給朋友，提升你的排名 ↑</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">3×</div>
+      <div class="stat-label">平均工作效率提升</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">$0</div>
+      <div class="stat-label">開始成本（早鳥免費試用）</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">6+</div>
+      <div class="stat-label">AI 自動化模組</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">全自動運行，你可以睡覺</div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="section">
+    <div class="section-label">核心能力</div>
+    <div class="section-title">一個平台，三條被動收入路徑</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon purple">⚡</div>
+        <h3>AI 工作流自動化</h3>
+        <p>把你的重複工作交給 AI Agent。內容生產、社群排程、資料整理，全部自動跑，你只需要設定一次。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon gold">💰</div>
+        <h3>數位產品變現引擎</h3>
+        <p>AI 協助你快速建立 Prompt 商品、電子報、課程。從創作到上架，縮短到 72 小時內完成。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon green">📈</div>
+        <h3>量化策略 + AI 訊號</h3>
+        <p>SMC + MA 策略模組，AI 即時分析市場訊號。台股、加密貨幣雙軌追蹤，Sharpe Ratio 目標 ≥1.5。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Preview -->
+  <section class="section" style="padding-top: 0;">
+    <div class="section-label">方案預覽</div>
+    <div class="section-title">早鳥能拿到什麼？</div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">免費版</div>
+        <div class="plan-price">$0<span>/月</span></div>
+        <div class="plan-note">永久免費，功能有限</div>
+        <ul class="plan-features">
+          <li>2 條工作流</li>
+          <li>基礎 AI 指令集</li>
+          <li>社群論壇存取</li>
+          <li class="locked">數位產品銷售</li>
+          <li class="locked">量化策略模組</li>
+          <li class="locked">優先支援</li>
+        </ul>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">🔥 早鳥</div>
+        <div class="plan-name">早鳥 Pro</div>
+        <div class="plan-price">$299<span>/月</span></div>
+        <div class="plan-note">候補名單解鎖 · 限量 100 席</div>
+        <ul class="plan-features">
+          <li>無限工作流</li>
+          <li>完整 AI Agent 套件</li>
+          <li>數位產品銷售系統</li>
+          <li>量化策略訊號</li>
+          <li>1v1 策略諮詢（每月）</li>
+          <li>早鳥終身優惠鎖定</li>
+        </ul>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">企業版</div>
+        <div class="plan-price">洽談<span></span></div>
+        <div class="plan-note">客製化方案 · 團隊協作</div>
+        <ul class="plan-features">
+          <li>Pro 全功能</li>
+          <li>多帳號 / 團隊管理</li>
+          <li>API 串接與白標</li>
+          <li>專屬 AI Agent 開發</li>
+          <li>SLA 保證 99.9%</li>
+          <li>專屬客戶成功經理</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <div class="cta-banner">
+    <div class="cta-inner">
+      <h2>現在加入，搶佔最前面的位置</h2>
+      <p>候補名單決定早鳥席次。越早加入，越早拿到訪問權限與最大折扣。</p>
+      <a href="#waitlist" class="cta-btn">立刻加入候補 →</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">FlowMint AI</div>
+    <div class="footer-copy">© 2026 FlowMint AI · 讓 AI 替你賺錢</div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API = window.location.hostname === "localhost" ? "http://localhost:5050" : "";
+
+    async function loadCount() {
+      try {
+        const r = await fetch(`${API}/api/waitlist/count`);
+        const d = await r.json();
+        document.getElementById("count-display").textContent = d.count;
+      } catch {
+        document.getElementById("count-display").textContent = "?";
+      }
+    }
+
+    async function joinWaitlist() {
+      const btn = document.getElementById("submit-btn");
+      const name = document.getElementById("inp-name").value;
+      const email = document.getElementById("inp-email").value.trim();
+      const interest = document.getElementById("inp-interest").value;
+
+      if (!email) { showToast("請填入 Email", true); return; }
+
+      btn.disabled = true;
+      btn.textContent = "送出中...";
+
+      try {
+        const r = await fetch(`${API}/api/waitlist`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, interest })
+        });
+        const d = await r.json();
+
+        if (r.ok) {
+          document.getElementById("form-content").style.display = "none";
+          const sbox = document.getElementById("success-box");
+          sbox.style.display = "block";
+          document.getElementById("position-display").textContent = `第 ${d.position} 位`;
+          loadCount();
+        } else if (r.status === 409) {
+          showToast(`你已在候補名單 #${d.position}`, false);
+          btn.disabled = false; btn.textContent = "搶佔候補名額 →";
+        } else {
+          showToast(d.error || "發生錯誤，請再試", true);
+          btn.disabled = false; btn.textContent = "搶佔候補名額 →";
+        }
+      } catch {
+        showToast("無法連線，請確認伺服器有啟動", true);
+        btn.disabled = false; btn.textContent = "搶佔候補名額 →";
+      }
+    }
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "toast" + (isError ? " error" : "") + " show";
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+
+    document.getElementById("inp-email").addEventListener("keydown", e => {
+      if (e.key === "Enter") joinWaitlist();
+    });
+
+    loadCount();
+  </script>
+</body>
+</html>
