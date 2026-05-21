@@ -53,9 +53,12 @@ def save_waitlist(data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 @app.route("/")
 def index():
-    return send_from_directory(os.path.dirname(__file__), "index.html")
+    return send_from_directory(SCRIPT_DIR, "index.html")
 
 
 @app.route("/api/waitlist", methods=["POST"])
